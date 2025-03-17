@@ -5,14 +5,12 @@ import { DragDropContext, DropResult } from '@hello-pangea/dnd';
 import Column from './Column';
 import { BoardState, Task, Status } from '@/types/task';
 import TaskDetail from './TaskDetail';
-import axios from 'axios';
+import { tasksAPI } from '@/lib/api';
 
 interface KanbanBoardProps {
   boardState: BoardState;
   onTaskMove: (taskId: string, sourceColumnId: string, destinationColumnId: string, newIndex: number) => void;
 }
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5258/api';
 
 // Status enum values from API
 const STATUS = {
@@ -31,12 +29,7 @@ export default function KanbanBoard({ boardState, onTaskMove }: KanbanBoardProps
     const fetchTasks = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem('token');
-        const response = await axios.get(`${API_URL}/task`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
+        const response = await tasksAPI.getAllTasks();
 
         // Group tasks by status
         const tasks = response.data;
